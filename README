@@ -1,0 +1,32 @@
+脚本功能：日志切割，5天前的日志删除
+
+此脚本的场景：
+有一个普通文件"/data/logsname.txt"，里面记录了需要日志切割的目录路径，格式如下：
+"/data/logs/xxx1log,/data/logs/xxx2log,/data/logs/xxx3log"
+路径下日志的格式为：
+xxx-%Y%m%d.log
+
+方法：
+1.将文件中的时间字段提取出来：
+os.walk()进行对文件"/data/logsname.txt"给的目录名进行遍历，找到日志文件
+
+2.使用str.strip()去提取文件名的时间文字：
+str = file.split('-')[-1].split('.')[0]
+
+3.使用time模块下的strptime将日志文件中提取出来的时间按指定的格式去识别并转换成时间元组
+tuple1 = time.strptime(str,format)
+
+4.将时间元组转换成时间戳：
+result = time.mktime(tuple1)
+
+5.获取今天日期的时间戳，并做条件判断：
+daytime = int(time.time()) - n*24*60*60		#n天的时间戳
+                        print("时间戳：",daytime)
+                        if int(timedata) < daytime:
+                            print("条件成立")   					#条件判断，删除5天前的日志
+
+6.进行时间定时任务：
+使用模块apschedulerd 调用 BlockingScheduler
+scheduler = BlockingScheduler()
+scheduler.add_job(job, 'cron', hour=12, minute=00)
+scheduler.start()
